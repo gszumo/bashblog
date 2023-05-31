@@ -161,6 +161,19 @@ global_variables() {
     # Markdown location. Trying to autodetect by default.
     # The invocation must support the signature 'markdown_bin in.md > out.html'
     [[ -f Markdown.pl ]] && markdown_bin=./Markdown.pl || markdown_bin=$(which Markdown.pl 2>/dev/null || which markdown 2>/dev/null)
+    #
+    # If Markdown.pl isn't found we'll use pandoc instead if it's installed
+    #
+    if [[ -z "$markdown_bin" ]]; then
+        echo "Could not find \"Markdown.pl\". Checking for pandoc..."
+        # Check if pandoc is installed
+        $(which pandoc >/dev/null 2>&1)
+        if [[ $? -eq 0 ]]; then
+            echo "Using pandoc as our markdown translator"
+            markdown_bin=$(which pandoc)
+        fi
+    fi
+
 }
 
 # Check for the validity of some variables
